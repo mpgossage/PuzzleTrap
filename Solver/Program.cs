@@ -16,6 +16,8 @@ namespace Solver
             LevelState ls=LevelState.FromString(file);
 
             Solver solver = new Solver();
+            // SolveEx(ls,true) gives a step by step summary
+            // SolveEx(ls) just looks for the answer with minimal display
             string[] result = solver.SolveEx(ls);
             if (result==null)
             {

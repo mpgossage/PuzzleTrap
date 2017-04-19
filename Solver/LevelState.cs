@@ -137,6 +137,8 @@ namespace Solver
                     }
                 }
             }
+            // bombs do not destroy each other, so must include itself
+            result.Add(new Position(x, y));
             return result;
         }
 
