@@ -10,7 +10,7 @@ namespace Solver
 
     public class Solver
     {
-        const int MAX_SOLUTIONS_PER_MOVE = 1000 * 10;
+        const int MAX_SOLUTIONS_PER_MOVE = 1000 * 100;
         public string[] Solve(LevelState ls)
         {
             if (!ls.IsMiceLeft()) return new string[]{ls.ToString() };

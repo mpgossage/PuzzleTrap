@@ -5,7 +5,7 @@ C..M..C..
 .M....C..
 ####.####
 #########
-.RRRRRRR.
+.rrrrrrr.
 MCCCCCCCC
 #########
 M.......C

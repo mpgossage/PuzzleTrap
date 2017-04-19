@@ -10,10 +10,10 @@ namespace Solver
 
     public struct LevelState
     {
-        public const char WALL = '#', MOUSE = 'm', CHEESE = 'c', TRAP = 't', EMPTY = '.', WOOD = 'w', BOMB = '*';
+        public const char WALL = '#', MOUSE = 'M', CHEESE = 'C', TRAP = 'T', EMPTY = '.', WOOD = 'W', BOMB = '*';
         public const string REMOVABLE = "rbgyop";
-        public const string FALLABLE = "rgbyopcw*";// REMOVABLE+CHEESE+WOOD+BOMB;
-        public const string EXPLODABLE = "rgbyopcwm";// FALLABLE+MOUSE-BOMB
+        public const string FALLABLE = "rgbyopCW*";// REMOVABLE+CHEESE+WOOD+BOMB;
+        public const string EXPLODABLE = "rgbyopCWM";// FALLABLE+MOUSE-BOMB
         readonly static int[,] ADJACENT_CELLS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
 
         public char[,] Grid;
@@ -34,7 +34,7 @@ namespace Solver
             {
                 for(int i=0;i< w;i++)
                 {
-                    result.Grid[i, j] = ValidateCell(arr[j][i]);
+                    result.Grid[i, j] = TranslateCell(arr[j][i]);
                 }
             }
             return result;
@@ -52,11 +52,11 @@ namespace Solver
             }
             return result;
         }
-        public static char ValidateCell(char c)
+        // converts cells into the types used in the game
+        public static char TranslateCell(char c)
         {
-            if (REMOVABLE.Contains(Char.ToLower(c))) return Char.ToLower(c);
             if (c == ' ') return EMPTY;
-            return Char.ToLower(c);
+            return c;
         }
         public static bool IsClickable(char c)
         {
@@ -64,17 +64,14 @@ namespace Solver
         }
         public static bool IsFallable(char c) // if it falls
         {
-            c = Char.ToLower(c);
             return FALLABLE.Contains(c) || c==MOUSE;
         }
         public static bool IsMouseAttracting(char c)
         {
-            c = Char.ToLower(c);
             return c == CHEESE || c == TRAP;
         }
         public static bool IsTrap(char c)
         {
-            c = Char.ToLower(c);
             return c == TRAP;
         }
         public static bool IsLineOfSightBlocking(char c)

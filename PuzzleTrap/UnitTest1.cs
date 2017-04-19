@@ -10,18 +10,20 @@ namespace PuzzleTrap
     [TestClass]
     public class UnitTest1
     {
-        string rootDir = Path.Combine(Directory.GetCurrentDirectory(), "../../../Solver");
+        string rootDir = Path.Combine(Directory.GetCurrentDirectory(), "../../../Solver/tests");
 
         LevelState LoadLevel(string fname)
         {
-            string file = File.ReadAllText(Path.Combine(rootDir, fname));
+            fname = Path.Combine(rootDir, fname);
+            //Console.WriteLine("load file {0}", fname);
+            string file = File.ReadAllText(fname);
             return LevelState.FromString(file);
         }
 
         [TestMethod]
         public void TestLevelStateFromFile()
         {
-            string fname = Path.Combine(rootDir, "levels/level002.txt");
+            string fname = Path.Combine(rootDir, "test_level_load.txt");
             string file = File.ReadAllText(fname);
             Assert.IsTrue(file.Length > 0);
             LevelState ls = LevelState.FromString(file);
@@ -38,7 +40,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestGetLinkedBlocks()
         {
-            LevelState ls = LoadLevel("levels/level002.txt");
+            LevelState ls = LoadLevel("test_level_load.txt");
             Assert.IsNotNull(ls);
             var res = ls.GetLinkedBlocks(2, 2);   // the mouse
             Assert.AreEqual(res.Length, 1);
@@ -59,7 +61,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestGetPossibleMoves()
         {
-            LevelState ls = LoadLevel("levels/level002.txt");
+            LevelState ls = LoadLevel("test_level_load.txt");
             Assert.IsNotNull(ls);
             var res = ls.GetPossibleMoves();
             Assert.AreEqual(res.Count(), 3);
@@ -73,7 +75,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestApplyGravity()
         {
-            LevelState ls = LoadLevel("levels/test002.txt");
+            LevelState ls = LoadLevel("test_gravity.txt");
             Assert.IsNotNull(ls);
             Console.WriteLine("Before \n" + ls);
             LevelState.ApplyGravity(ref ls);
@@ -91,7 +93,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestRemoveBlocksApplyGravity()
         {
-            LevelState ls = LoadLevel("levels/level002.txt");
+            LevelState ls = LoadLevel("test_level_load.txt");
             Assert.IsNotNull(ls);
             Position[] move = { new Position(3, 3), new Position(4, 3), new Position(5, 3), new Position(6, 3) };
             LevelState.RemoveBlocks(ref ls, move);
@@ -104,13 +106,13 @@ namespace PuzzleTrap
                 Assert.AreEqual(ls.Grid[i, 2], LevelState.EMPTY);
             Assert.AreEqual(ls.Grid[3, 3], 'r');
             Assert.AreEqual(ls.Grid[4, 3], 'r');
-            Assert.AreEqual(ls.Grid[5, 3], 'c');
+            Assert.AreEqual(ls.Grid[5, 3], LevelState.CHEESE);
             Assert.AreEqual(ls.Grid[6, 3], LevelState.EMPTY);
         }
         [TestMethod]
         public void TestCanMouseSeeCheese()
         {
-            LevelState ls = LoadLevel("levels/level002.txt");
+            LevelState ls = LoadLevel("test_level_load.txt");
             Assert.IsNotNull(ls);
             // silly pos
             Assert.AreEqual(ls.CanMouseSeeCheese(new Position(0, 0)), 0);
@@ -134,7 +136,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestUpdateMouse()
         {
-            LevelState ls = LoadLevel("levels/test001.txt");
+            LevelState ls = LoadLevel("test_mouse.txt");
             Assert.IsNotNull(ls);
             // mouse at 0,0 should walk to cheese
             Position mouse = new Position(0, 0);
@@ -155,13 +157,13 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestUpdateMouse2()
         {
-            LevelState ls = LoadLevel("levels/test001.txt");
+            LevelState ls = LoadLevel("test_mouse.txt");
             Assert.IsNotNull(ls);
             // mouse at 0,8 will run to 8,8 eating all the cheese
             // but all the blocks which the cheese was sitting on will fall
-            //Console.WriteLine("Before:\n" + ls);
+            Console.WriteLine("Before:\n" + ls);
             Position mouse = LevelState.UpdateMouse(new Position(0, 8), ref ls);
-            //Console.WriteLine("After:\n" + ls);
+            Console.WriteLine("After:\n" + ls);
             Assert.AreEqual(new Position(8, 8), mouse);
             for (int i = 1; i < 8; i++)
             {
@@ -178,7 +180,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestMakeMove()
         {
-            LevelState ls = LoadLevel("levels/test001.txt");
+            LevelState ls = LoadLevel("test_mouse.txt");
             Assert.IsNotNull(ls);
             // remove dummmy point & update all mice & gravity
             LevelState ls2 = ls.MakeMove(new Position[] { new Position(1, 0) });
@@ -191,7 +193,7 @@ namespace PuzzleTrap
         [TestMethod]
         public void TestBombGetPossibleMoves()
         {
-            LevelState ls = LoadLevel("levels/test003.txt");
+            LevelState ls = LoadLevel("test_bomb.txt");
             Assert.IsNotNull(ls);
             var moves=ls.GetPossibleMoves().ToList();
             var clicks = moves.ConvertAll(t => t.Item1.ToString());
