@@ -184,6 +184,7 @@ namespace Solver
             {
                 UpdateMouse(m, ref ls);
             }
+            ApplyGravity(ref ls); // apply gravity one more time, just to make sure
             return ls;
         }
         // returns a state with all the specified blocks removed

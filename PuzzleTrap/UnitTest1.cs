@@ -208,5 +208,26 @@ namespace PuzzleTrap
             Assert.IsTrue(moves.Exists(m => m.Item1.Equals(new Position(2, 2))));
             Assert.IsTrue(moves.Exists(m => m.Item1.Equals(new Position(3, 2))));
         }
+        [TestMethod]
+        public void TestEatDoubleCheese()
+        {
+            // in test_cheese_drop which is based upon level 31
+            // the mouse eats 2 cheeses, but the second block does not drop
+            LevelState ls = LoadLevel("test_cheese_drop.txt");
+            Assert.IsNotNull(ls);
+            Console.WriteLine("LS:\n" + ls);
+            LevelState ls2 = ls.MakeMove(new Position[] { new Position(6, 1), new Position(7, 1) });
+            Assert.IsNotNull(ls2);
+            Console.WriteLine("LS2:\n" + ls2);
+            Assert.AreEqual(ls2.GetCell(0, 1), LevelState.MOUSE);    // move moved to 0,1
+            Assert.AreEqual(ls2.GetCell(4, 1), LevelState.WOOD);    // wood fell
+            Assert.AreEqual(ls2.GetCell(5, 1), LevelState.WOOD);    // wood fell
+            LevelState ls3 = ls2.MakeMove(new Position[] { new Position(6, 4), new Position(7, 4) });
+            Assert.IsNotNull(ls3);
+            Console.WriteLine("LS3:\n" + ls3);
+            // mouse should be on trap
+            Assert.AreEqual(ls3.GetCell(4, 4), LevelState.WOOD);    // wood fell
+            Assert.AreEqual(ls3.GetCell(5, 4), LevelState.WOOD);    // wood fell
+        }
     }
 }
