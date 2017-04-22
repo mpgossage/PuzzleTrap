@@ -187,6 +187,19 @@ namespace Solver
             ApplyGravity(ref ls); // apply gravity one more time, just to make sure
             return ls;
         }
+        // returns if two level states are equal (same grid)
+        public bool IsEqual(ref LevelState ls)
+        {
+            if (ls.Width != Width || ls.Height != Height) return false;
+            for(int h=0;h<Height;h++)
+            {
+                for(int w=0;w<Width;w++)
+                {
+                    if (ls.Grid[w, h] != Grid[w, h]) return false;
+                }
+            }
+            return true;
+        }
         // returns a state with all the specified blocks removed
         public static void RemoveBlocks(ref LevelState ls, Position[] pts)
         {

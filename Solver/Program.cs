@@ -12,7 +12,7 @@ namespace Solver
         static void Main(string[] args)
         {
             string rootDir = Path.Combine(Directory.GetCurrentDirectory(), "../../../Solver/levels");
-            string file = File.ReadAllText(Path.Combine(rootDir, "level031.txt"));
+            string file = File.ReadAllText(Path.Combine(rootDir, "level034.txt"));
             LevelState ls=LevelState.FromString(file);
 
             Solver solver = new Solver();

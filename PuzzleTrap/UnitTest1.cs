@@ -195,10 +195,10 @@ namespace PuzzleTrap
         {
             LevelState ls = LoadLevel("test_bomb.txt");
             Assert.IsNotNull(ls);
-            var moves=ls.GetPossibleMoves().ToList();
+            var moves = ls.GetPossibleMoves().ToList();
             var clicks = moves.ConvertAll(t => t.Item1.ToString());
-            Console.WriteLine("Click points: " + string.Join(",",clicks));
-            Console.WriteLine(moves.Exists(m => (m.Item1.Item1==2 && m.Item1.Item2==1)));
+            Console.WriteLine("Click points: " + string.Join(",", clicks));
+            Console.WriteLine(moves.Exists(m => (m.Item1.Item1 == 2 && m.Item1.Item2 == 1)));
             // bomb at 2,1 can be clicked
             Assert.IsTrue(moves.Exists(m => (m.Item1.Equals(new Position(2, 1)))));
             // bomb at 5,1 cannot be clicked (too near to a mouse)
@@ -229,5 +229,82 @@ namespace PuzzleTrap
             Assert.AreEqual(ls3.GetCell(4, 4), LevelState.WOOD);    // wood fell
             Assert.AreEqual(ls3.GetCell(5, 4), LevelState.WOOD);    // wood fell
         }
+        [TestMethod]
+        public void TestEqual()
+        {
+            // in remove A, then remove B should be the same as remove B, remove A unless the mouse drops or similar
+            LevelState ls = LoadLevel("test_similar.txt");
+            Assert.IsNotNull(ls);
+            Position[] removeBlue = new Position[] { new Position(1, 0), new Position(2, 0) };
+            Position[] removeGreen = new Position[] { new Position(4, 0), new Position(5, 0) };
+            Position[] removeRed = new Position[] { new Position(6, 1), new Position(7, 1) };
+            LevelState removeBlueRemoveGreen = ls.MakeMove(removeBlue).MakeMove(removeGreen);
+            LevelState removeGreenRemoveBlue = ls.MakeMove(removeGreen).MakeMove(removeBlue);
+            Assert.IsTrue(removeBlueRemoveGreen.IsEqual(ref removeGreenRemoveBlue));
+            Assert.IsTrue(removeGreenRemoveBlue.IsEqual(ref removeBlueRemoveGreen));
+            LevelState removeRedRemoveGreen = ls.MakeMove(removeRed).MakeMove(removeGreen);
+            LevelState removeGreenRemoveRed = ls.MakeMove(removeGreen).MakeMove(removeRed);
+            Assert.IsFalse(removeRedRemoveGreen.IsEqual(ref removeGreenRemoveRed));
+            Assert.IsFalse(removeGreenRemoveRed.IsEqual(ref removeRedRemoveGreen));
+        }
+        [TestMethod]
+        public void TestEqualPerformance()
+        {
+            // testing time taken for comparisons of level state, we know it works (see above)
+            LevelState ls = LoadLevel("test_similar.txt");
+            Assert.IsNotNull(ls);
+            Position[] removeBlue = new Position[] { new Position(1, 0), new Position(2, 0) };
+            Position[] removeGreen = new Position[] { new Position(4, 0), new Position(5, 0) };
+            Position[] removeRed = new Position[] { new Position(6, 1), new Position(7, 1) };
+            LevelState removeBlueRemoveGreen = ls.MakeMove(removeBlue).MakeMove(removeGreen);
+            LevelState removeGreenRemoveBlue = ls.MakeMove(removeGreen).MakeMove(removeBlue);
+            LevelState removeRedRemoveGreen = ls.MakeMove(removeRed).MakeMove(removeGreen);
+            LevelState removeGreenRemoveRed = ls.MakeMove(removeGreen).MakeMove(removeRed);
+            const int NUM_TIMES = 1000 * 1000;
+            // test 1: just the compare
+            var timer = new System.Diagnostics.Stopwatch();
+            bool dummy = false; // using a XOR (^) to ensure no shortcutting
+            timer.Start();
+            for(int i=0;i<NUM_TIMES;i++)
+            {
+                dummy ^= removeBlueRemoveGreen.IsEqual(ref removeGreenRemoveBlue);
+                dummy ^= removeGreenRemoveBlue.IsEqual(ref removeBlueRemoveGreen);
+                dummy ^= removeGreenRemoveRed.IsEqual(ref removeRedRemoveGreen);
+                dummy ^= removeRedRemoveGreen.IsEqual(ref removeGreenRemoveRed);
+            }
+            timer.Stop();
+            Console.WriteLine("IsEqual took {0} ms", timer.ElapsedMilliseconds);
+            // test 2: convert to strings and compare (ToString in the loop)
+            timer.Restart();
+            for (int i = 0; i < NUM_TIMES; i++)
+            {
+                string rBG = removeBlueRemoveGreen.ToString();
+                string rGB = removeGreenRemoveBlue.ToString();
+                string rGR = removeGreenRemoveRed.ToString();
+                string rRG = removeRedRemoveGreen.ToString();
+                dummy ^= (rBG == rGB);
+                dummy ^= (rGB == rBG);
+                dummy ^= (rGR == rRG);
+                dummy ^= (rRG == rGR);
+            }
+            timer.Stop();
+            Console.WriteLine("ToString took {0} ms", timer.ElapsedMilliseconds);
+            // test 3: convert to strings and compare (ToString outside the loop)
+            timer.Restart();
+            string rBG2 = removeBlueRemoveGreen.ToString();
+            string rGB2 = removeGreenRemoveBlue.ToString();
+            string rGR2 = removeGreenRemoveRed.ToString();
+            string rRG2 = removeRedRemoveGreen.ToString();
+            for (int i = 0; i < NUM_TIMES; i++)
+            {
+                dummy ^= (rBG2 == rGB2);
+                dummy ^= (rGB2 == rBG2);
+                dummy ^= (rGR2 == rRG2);
+                dummy ^= (rRG2 == rGR2);
+            }
+            timer.Stop();
+            Console.WriteLine("ToString(outside) took {0} ms", timer.ElapsedMilliseconds);
+        }
+
     }
 }
