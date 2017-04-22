@@ -10,10 +10,10 @@ namespace Solver
 
     public struct LevelState
     {
-        public const char WALL = '#', MOUSE = 'M', CHEESE = 'C', TRAP = 'T', EMPTY = '.', WOOD = 'W', BOMB = '*';
+        public const char WALL = '#', MOUSE = 'M', CHEESE = 'C', TRAP = 'T', EMPTY = '.', WOOD = 'W', BOMB = '*', CRYSTAL = 'V';
         public const string REMOVABLE = "rbgyop";
         public const string FALLABLE = "rgbyopCW*";// REMOVABLE+CHEESE+WOOD+BOMB;
-        public const string EXPLODABLE = "rgbyopCWM";// FALLABLE+MOUSE-BOMB
+        public const string EXPLODABLE = "rgbyopCWMV";// FALLABLE+MOUSE+CRYSTAL-BOMB
         readonly static int[,] ADJACENT_CELLS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
 
         public char[,] Grid;
