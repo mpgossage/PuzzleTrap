@@ -183,8 +183,8 @@ namespace Solver
             foreach(var m in ls.GetAllMice())
             {
                 UpdateMouse(m, ref ls);
+                ApplyGravity(ref ls); // apply gravity, just to make sure
             }
-            ApplyGravity(ref ls); // apply gravity one more time, just to make sure
             return ls;
         }
         // returns if two level states are equal (same grid)
