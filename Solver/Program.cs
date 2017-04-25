@@ -14,7 +14,7 @@ namespace Solver
         static void Main(string[] args)
         {
             //new Program().SolveAStar("level016.txt");
-            new Program().SolveAStar("level041.txt");
+            new Program().SolveAStar("level045.txt");
             //new Program().SolveAll();
         }
 

@@ -180,12 +180,27 @@ namespace Solver
             LevelState ls = this.Clone();
             RemoveBlocks(ref ls, pts);
             ApplyGravity(ref ls);
-            foreach(var m in ls.GetAllMice())
-            {
-                UpdateMouse(m, ref ls);
-                ApplyGravity(ref ls); // apply gravity, just to make sure
-            }
+            MoveAllMice(ref ls);
             return ls;
+        }
+        public void MoveAllMice(ref LevelState ls)
+        {
+            // its not enough to just move all mice once
+            // sometimes moving mouse 2 will allow mouse 1 to now move
+            bool mouseMoved = false;
+            do
+            {
+                mouseMoved = false;
+                foreach (var m in ls.GetAllMice())
+                {
+                    var newM = UpdateMouse(m, ref ls);
+                    if (m.Item1 !=newM.Item1 || m.Item2 !=newM.Item2 )
+                    {
+                        mouseMoved = true; // the mouse moved
+                        ApplyGravity(ref ls);
+                    }
+                }
+            } while (mouseMoved);
         }
         // returns if two level states are equal (same grid)
         public bool IsEqual(ref LevelState ls)
