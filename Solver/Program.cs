@@ -14,7 +14,7 @@ namespace Solver
         static void Main(string[] args)
         {
             //new Program().SolveAStar("level016.txt");
-            new Program().SolveAStar("level045.txt");
+            new Program().SolveAStar("level066.txt");
             //new Program().SolveAll();
         }
 
@@ -22,7 +22,7 @@ namespace Solver
         {
             Solver solver = new Solver();
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-            for (int i=1;i<=33;i++)
+            for (int i=1;i<=45;i++)
             {
                 string file = File.ReadAllText(Path.Combine(rootDir, string.Format("level{0:000}.txt",i)));
                 LevelState ls = LevelState.FromString(file);

@@ -10,7 +10,9 @@ namespace Solver
 
     public struct LevelState
     {
-        public const char WALL = '#', MOUSE = 'M', CHEESE = 'C', TRAP = 'T', EMPTY = '.', WOOD = 'W', BOMB = '*', CRYSTAL = 'V';
+        public const char WALL = '#', EMPTY = '.', TUNNEL = '=';
+        public const char MOUSE = 'M', CHEESE = 'C', TRAP = 'T';
+        public const char WOOD = 'W', BOMB = '*', CRYSTAL = 'V';
         public const string REMOVABLE = "rbgyop";
         public const string FALLABLE = "rgbyopCW*";// REMOVABLE+CHEESE+WOOD+BOMB;
         public const string EXPLODABLE = "rgbyopCWMV";// FALLABLE+MOUSE+CRYSTAL-BOMB
@@ -76,7 +78,7 @@ namespace Solver
         }
         public static bool IsLineOfSightBlocking(char c)
         {
-            return c != EMPTY;
+            return !(c == EMPTY || c==TUNNEL);
         }
         public bool IsValid(int x, int y) { return x >= 0 && x < Width && y >= 0 && y < Height; }
         public bool IsValid(Position p) { return IsValid(p.Item1,p.Item2); }
@@ -323,11 +325,14 @@ namespace Solver
                         ls.Grid[mx, my] = EMPTY;   // remove cheese
                         break;  // stop moving & look for new cheese
                     }
-                    if (ls.GetCell(mx,my+1)== TRAP) // mouse is above trap
+                    if (c != TUNNEL) // if not in a tunnel
                     {
-                        return new Position(mx, my + 1);    // mouse on the trap
+                        if (ls.GetCell(mx, my + 1) == TRAP) // mouse is above trap, it falls in
+                        {
+                            return new Position(mx, my + 1);    // mouse on the trap
+                        }
+                        if (ls.GetCell(mx, my + 1) == EMPTY) break; // if not on ground, it falls
                     }
-                    if (ls.GetCell(mx, my + 1) == EMPTY) break; // if not on ground
                 }
                 // fall if applicable
                 while (ls.GetCell(mx, my + 1) == EMPTY) my++;

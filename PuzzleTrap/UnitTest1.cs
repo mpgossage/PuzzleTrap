@@ -265,7 +265,7 @@ namespace PuzzleTrap
             var timer = new System.Diagnostics.Stopwatch();
             bool dummy = false; // using a XOR (^) to ensure no shortcutting
             timer.Start();
-            for(int i=0;i<NUM_TIMES;i++)
+            for (int i = 0; i < NUM_TIMES; i++)
             {
                 dummy ^= removeBlueRemoveGreen.IsEqual(ref removeGreenRemoveBlue);
                 dummy ^= removeGreenRemoveBlue.IsEqual(ref removeBlueRemoveGreen);
@@ -305,6 +305,25 @@ namespace PuzzleTrap
             timer.Stop();
             Console.WriteLine("ToString(outside) took {0} ms", timer.ElapsedMilliseconds);
         }
-
+        [TestMethod]
+        public void TestTunnels()
+        {
+            LevelState ls = LoadLevel("test_tunnel.txt");
+            Assert.IsNotNull(ls);
+            // gravity has no effect on tunnels
+            LevelState postGrav = ls.Clone();
+            LevelState.ApplyGravity(ref postGrav);
+            Assert.IsTrue(ls.IsEqual(ref postGrav));
+            // mouse at 4,1 can see cheese at 0,1 (left=-1)
+            Position mousePos = new Position(4, 1);
+            Assert.AreEqual(-1, postGrav.CanMouseSeeCheese(mousePos));
+            // can also see trap at 7,1 (if we remove cheese) (right=+1)
+            postGrav.Grid[0, 1] = LevelState.EMPTY;
+            Assert.AreEqual(+1, postGrav.CanMouseSeeCheese(mousePos));
+            // mouse can move through tunnel to get to trap at 7,1
+            Position p = LevelState.UpdateMouse(mousePos, ref postGrav);
+            Assert.AreEqual(7, p.Item1);
+            Assert.AreEqual(1, p.Item2);
+        }
     }
 }
