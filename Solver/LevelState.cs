@@ -304,6 +304,14 @@ namespace Solver
             int mx = mouse.Item1, my = mouse.Item2;
             while (true)
             {
+                // special case: if mouse is directly above trap
+                // can happen if the mouse drops onto the trap
+                if (ls.GetCell(mx, my + 1) == TRAP)
+                {
+                    ls.Grid[mx, my] = EMPTY;  // no mouse
+                    return new Position(mx, my + 1);    // mouse on the trap
+                }
+
                 int cheeseDir = ls.CanMouseSeeCheese(new Position(mx,my));
                 if (cheeseDir == 0) break;    // no cheese, finished
                 ls.Grid[mx, my] = EMPTY;  // no mouse
@@ -336,11 +344,6 @@ namespace Solver
                 }
                 // fall if applicable
                 while (ls.GetCell(mx, my + 1) == EMPTY) my++;
-                // if mouse is directly above trap it dies:
-                if (ls.GetCell(mx, my + 1) == TRAP)
-                {
-                    return new Position(mx, my+1);    // mouse on the trap
-                }
                 ls.Grid[mx, my] = MOUSE;  // put mouse in (in case anything tries to fall)
                 ApplyGravity(ref ls);     // everything else falls
             }
