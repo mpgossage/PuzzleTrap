@@ -12,10 +12,10 @@ namespace Solver
     {
         public const char WALL = '#', EMPTY = '.', TUNNEL = '=';
         public const char MOUSE = 'M', CHEESE = 'C', TRAP = 'T';
-        public const char WOOD = 'W', BOMB = '*', CRYSTAL = 'V';
+        public const char WOOD = 'W', BOMB = '*', CRYSTAL = 'V', BALLOON='0';
         public const string REMOVABLE = "rbgyop";
         public const string FALLABLE = "rgbyopCW*";// REMOVABLE+CHEESE+WOOD+BOMB;
-        public const string EXPLODABLE = "rgbyopCWMV";// FALLABLE+MOUSE+CRYSTAL-BOMB
+        public const string EXPLODABLE = "rgbyopCWMV";// FALLABLE+MOUSE+CRYSTAL-BOMB (balloon?)
         readonly static int[,] ADJACENT_CELLS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
 
         public char[,] Grid;
@@ -168,6 +168,10 @@ namespace Solver
                             yield return Tuple.Create(new Position(x, y), pts.ToArray());
                         }
                     }
+                    else if (Grid[x,y]==BALLOON) // ballons can be individually clicked
+                    {
+                        yield return Tuple.Create(new Position(x, y), new Position[] { new Position(x, y) });
+                    }
                 }           
             }
         }
@@ -311,6 +315,13 @@ namespace Solver
                     ls.Grid[mx, my] = EMPTY;  // no mouse
                     return new Position(mx, my + 1);    // mouse on the trap
                 }
+                // another special case: if mouse stands on cheese it eats it
+                if (ls.GetCell(mx, my + 1) == CHEESE)
+                {
+                    ls.Grid[mx, my] = EMPTY;  // no mouse
+                    my++;
+                    ls.Grid[mx, my] = MOUSE;    // mouse is here
+                }
 
                 int cheeseDir = ls.CanMouseSeeCheese(new Position(mx,my));
                 if (cheeseDir == 0) break;    // no cheese, finished
@@ -358,16 +369,15 @@ namespace Solver
             int fitness = 0;
             foreach(var mouse in GetAllMice())
             {
-                int dist = traps.Min(p => IHypot(p,mouse));
+                int dist = traps.Min(p => GetDist(p,mouse));
                 fitness += dist;
             }
             return fitness;
         }
-        
-        private static int IHypot(Position a, Position b)
+
+        private static int GetDist(Position a, Position b)
         {
-            int dx = a.Item1 - b.Item1, dy = a.Item2 - b.Item2;
-            return (int)Math.Sqrt(dx*dx + dy*dy);
+            return Math.Abs(a.Item1 - b.Item1) + Math.Abs(a.Item2 - b.Item2);
         }
     }
 }
