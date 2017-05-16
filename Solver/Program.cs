@@ -23,8 +23,14 @@ namespace Solver
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             for (int i=1;i<=75;i++)
             {
+                if (i==36 || i==42 || i==57) // these level take a long time
+                {
+                    Console.WriteLine("Skipping level {0} it takes too long", i);
+                    continue;
+                }
                 string file = File.ReadAllText(Path.Combine(rootDir, string.Format("level{0:000}.txt",i)));
                 LevelState ls = LevelState.FromString(file);
+                Console.WriteLine("\n\nSolving level {0}...", i);
                 timer.Restart();
                 string[] result = solver.SolveAStar(ls);
                 timer.Stop();
