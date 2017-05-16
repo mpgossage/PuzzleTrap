@@ -4,3 +4,5 @@ CC..CCooM
 ####WW###
 TT..CCooM
 #########
+TT....ooM
+####C####

@@ -228,6 +228,10 @@ namespace PuzzleTrap
             // mouse should be on trap
             Assert.AreEqual(ls3.GetCell(4, 4), LevelState.WOOD);    // wood fell
             Assert.AreEqual(ls3.GetCell(5, 4), LevelState.WOOD);    // wood fell
+            // if a mouse walks over cheese it will stop & eat the cheese below it (hence falling)
+            LevelState ls4 = ls3.MakeMove(new Position[] { new Position(6, 6), new Position(7, 6) });
+            Console.WriteLine("LS4:\n" + ls4);
+            Assert.AreEqual(ls4.GetCell(4, 7), LevelState.MOUSE);    // cheese is eaten & replaced by a mouse
         }
         [TestMethod]
         public void TestEqual()

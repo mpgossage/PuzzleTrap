@@ -346,11 +346,17 @@ namespace Solver
                     }
                     if (c != TUNNEL) // if not in a tunnel
                     {
-                        if (ls.GetCell(mx, my + 1) == TRAP) // mouse is above trap, it falls in
+                        char below = ls.GetCell(mx, my + 1);
+                        if (below == TRAP) // mouse is above trap, it falls in
                         {
                             return new Position(mx, my + 1);    // mouse on the trap
                         }
-                        if (ls.GetCell(mx, my + 1) == EMPTY) break; // if not on ground, it falls
+                        if (below == EMPTY) break; // if not on ground, it falls
+                        if (below == CHEESE) // if mouse on cheese it eats it, then its on nothing & will fall
+                        {
+                            ls.Grid[mx, my + 1] = EMPTY;
+                            break;
+                        }
                     }
                 }
                 // fall if applicable

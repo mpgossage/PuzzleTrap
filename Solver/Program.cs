@@ -13,8 +13,8 @@ namespace Solver
 
         static void Main(string[] args)
         {
-            //new Program().SolveAStar("level075.txt");
-            new Program().SolveAll();
+            new Program().SolveAStar("level079.txt");
+            //new Program().SolveAll();
         }
 
         void SolveAll()
